@@ -168,6 +168,11 @@ COPY --chown=$UID:$GID --from=build /app/package.json /app/package.json
 # copy backend files
 COPY --chown=$UID:$GID ./backend .
 
+# Prime cache from original location to /app/_primed_cache
+RUN mkdir -p /app/_primed_cache && \
+    mv /app/backend/data/cache/* /app/_primed_cache/ 2>/dev/null || true && \
+    rm -rf /app/backend/data/cache
+
 EXPOSE 8080
 
 HEALTHCHECK CMD curl --silent --fail http://localhost:${PORT:-8080}/health | jq -ne 'input.status == true' || exit 1
