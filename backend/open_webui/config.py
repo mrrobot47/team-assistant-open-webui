@@ -764,7 +764,7 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 # Cache DIR
 ####################################
 
-CACHE_DIR = DATA_DIR / "cache"
+CACHE_DIR = Path(os.environ.get("CACHE_DIR", DATA_DIR / "cache"))
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 
