@@ -162,7 +162,6 @@ module "cloud_build" {
   cloud_run_service_name = var.cloud_run_service_name
   auto_deploy            = false # Disable auto-deployment for initial setup
   enable_release_trigger = false # Disable release trigger for staging
-
   depends_on = [module.artifact_registry, module.iam]
 }
 
@@ -200,8 +199,8 @@ module "cloud_run" {
     WEBUI_NAME                    = "Open WebUI (Staging)"
     WEBUI_AUTH                    = "true"
     DATA_DIR                      = "/app/backend/data"
-    CACHE_DIR                     = "/app/backend/cache"
-    UPLOAD_DIR                    = "/app/backend/uploads"
+    CACHE_DIR                     = "/tmp/cache"
+    UPLOAD_DIR                    = "/app/backend/data/uploads"
     VECTOR_DB                     = "chroma"
     CHROMA_DATA_PATH              = "/app/backend/data/vector_db"
     ENABLE_DIRECT_CONNECTIONS     = "true"
