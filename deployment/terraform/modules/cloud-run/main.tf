@@ -40,12 +40,6 @@ resource "google_cloud_run_v2_service" "openwebui" {
       }
     }
 
-    volumes {
-      name = "cache-storage"
-      gcs {
-        bucket = var.storage_bucket_name
-      }
-    }
 
     containers {
       image = var.container_image
@@ -72,12 +66,7 @@ resource "google_cloud_run_v2_service" "openwebui" {
 
       volume_mounts {
         name       = "uploads-storage"
-        mount_path = "/app/backend/uploads"
-      }
-
-      volume_mounts {
-        name       = "cache-storage"
-        mount_path = "/app/backend/cache"
+        mount_path = "/app/backend/data/uploads"
       }
 
       # Environment variables
@@ -170,7 +159,8 @@ data "google_artifact_registry_repository" "openwebui" {
 # @TODO Skip generating the image if one already exists, except when Dockerfile changes.
 resource "null_resource" "initial_image_build" {
   triggers = {
-    build_trigger = timestamp()
+    cloudbuild_config = filemd5("${path.module}/../../../cloudbuild-initial.yaml")
+    dockerfile_hash   = filemd5("${path.module}/../../../../Dockerfile")
   }
 
   provisioner "local-exec" {
