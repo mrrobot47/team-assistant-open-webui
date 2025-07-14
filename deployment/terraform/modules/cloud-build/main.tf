@@ -55,6 +55,20 @@ resource "google_cloudbuild_trigger" "main" {
       ]
     }
 
+    step {
+      name = "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+      entrypoint = "gcloud"
+      args = [
+        "run",
+        "deploy",
+        "${var.environment}-${var.cloud_run_service_name}",
+        "--image", "${var.artifact_registry_url}/open-webui:$SHORT_SHA",
+        "--region", var.region,
+        "--platform", "managed",
+        "--quiet"
+      ]
+    }
+
     substitutions = {
       _ENVIRONMENT = var.environment
       _REGION      = var.region
@@ -78,7 +92,7 @@ resource "google_cloudbuild_trigger" "release" {
   location        = var.region # Match the region where repository connection exists
   name            = "${var.environment}-open-webui-release-trigger"
   description     = "Release trigger for Open WebUI ${var.environment} environment"
-  service_account = var.service_account_email
+  service_account = "projects/-/serviceAccounts/${var.service_account_email}"
 
   # Trigger on tag creation
   github {
@@ -122,7 +136,8 @@ resource "google_cloudbuild_trigger" "release" {
     dynamic "step" {
       for_each = var.environment == "prod" && var.auto_deploy ? [1] : []
       content {
-        name = "gcr.io/cloud-builders/gcloud"
+        name = "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+        entrypoint = "gcloud"
         args = [
           "run", "deploy", "${var.environment}-${var.cloud_run_service_name}",
           "--image", "${var.artifact_registry_url}/open-webui:$TAG_NAME",
@@ -151,6 +166,7 @@ resource "google_cloudbuild_trigger" "release" {
 
 # Manual trigger as fallback (can be used if GitHub integration fails)
 resource "google_cloudbuild_trigger" "manual" {
+  count       = var.enable_manual_trigger ? 1 : 0
   project     = var.project_id
   location    = var.region
   name        = "${var.environment}-open-webui-manual-trigger"
@@ -195,6 +211,19 @@ resource "google_cloudbuild_trigger" "manual" {
       ]
     }
 
+    step {
+      name = "gcr.io/google.com/cloudsdktool/cloud-sdk:slim"
+      entrypoint = "gcloud"
+      args = [
+        "run",
+        "deploy",
+        "${var.environment}-${var.cloud_run_service_name}",
+        "--image", "${var.artifact_registry_url}/open-webui:$SHORT_SHA",
+        "--region", var.region,
+        "--platform", "managed",
+        "--quiet"
+      ]
+    }
     substitutions = {
       _ENVIRONMENT = var.environment
       _REGION      = var.region
