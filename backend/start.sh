@@ -3,6 +3,13 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd "$SCRIPT_DIR" || exit
 
+# Move in-memory cache from image to /tmp directory because in cloud run /tmp is the only writable directory.
+if [ -d "/app/_primed_cache" ]; then
+  echo "Restoring cache to /tmp/cache"
+  mkdir -p /tmp/cache  
+  cp -a /app/_primed_cache/. /tmp/cache/
+fi
+
 # Add conditional Playwright browser installation
 if [[ "${WEB_LOADER_ENGINE,,}" == "playwright" ]]; then
     if [[ -z "${PLAYWRIGHT_WS_URL}" ]]; then
