@@ -97,4 +97,10 @@ variable "release_tag_pattern" {
   description = "Tag pattern for release builds"
   type        = string
   default     = "v*"
-} 
+}
+
+variable "enable_manual_trigger" {
+  description = "Enable manual Cloud Build trigger"
+  type        = bool
+  default     = true
+}
