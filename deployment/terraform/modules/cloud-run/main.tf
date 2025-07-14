@@ -140,13 +140,46 @@ resource "google_cloud_run_v2_service_iam_member" "public_access" {
   member   = "allUsers"
 }
 
-# IAM policy for authenticated access (if public access is disabled)
+# IAM policy for authenticated access (if public access is disabled and IAP is disabled)
 resource "google_cloud_run_v2_service_iam_member" "authenticated_access" {
-  count    = var.allow_public_access ? 0 : 1
+  count    = (!var.allow_public_access && !var.enable_iap) ? 1 : 0
   name     = google_cloud_run_v2_service.openwebui.name
   location = google_cloud_run_v2_service.openwebui.location
   role     = "roles/run.invoker"
   member   = "allAuthenticatedUsers"
+}
+
+# IAP service account member for Cloud Run invoker (when IAP is enabled)
+resource "google_cloud_run_v2_service_iam_member" "iap_service_account" {
+  count    = var.enable_iap ? 1 : 0
+  name     = google_cloud_run_v2_service.openwebui.name
+  location = google_cloud_run_v2_service.openwebui.location
+  role     = "roles/run.invoker"
+  member   = "serviceAccount:service-${data.google_project.current.number}@gcp-sa-iap.iam.gserviceaccount.com"
+}
+
+# IAP web resource access for specified users
+resource "google_iap_web_iam_member" "iap_users" {
+  count   = var.enable_iap ? length(var.iap_users) : 0
+  project = var.project_id
+  role    = "roles/iap.httpsResourceAccessor"
+  member  = var.iap_users[count.index]
+}
+
+# Enable IAP for Cloud Run service using gcloud (since Terraform doesn't support iap_enabled yet)
+resource "null_resource" "enable_iap" {
+  count = var.enable_iap ? 1 : 0
+
+  provisioner "local-exec" {
+    command = "gcloud beta run services update ${google_cloud_run_v2_service.openwebui.name} --region=${var.region} --project=${var.project_id} --iap"
+  }
+
+  depends_on = [google_cloud_run_v2_service.openwebui]
+}
+
+# Get current project details
+data "google_project" "current" {
+  project_id = var.project_id
 }
 
 data "google_artifact_registry_repository" "openwebui" {

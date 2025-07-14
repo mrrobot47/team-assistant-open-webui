@@ -159,6 +159,19 @@ variable "enable_monitoring" {
   default     = true  # Enable monitoring in staging to test alerts
 }
 
+# IAP Configuration
+variable "enable_iap" {
+  description = "Enable Identity-Aware Proxy for Cloud Run service"
+  type        = bool
+  default     = false
+}
+
+variable "iap_users" {
+  description = "List of users/groups/service accounts to grant IAP access (e.g., user:email@example.com, group:group@example.com)"
+  type        = list(string)
+  default     = []
+}
+
 # Labels
 variable "labels" {
   description = "Labels to apply to all resources"

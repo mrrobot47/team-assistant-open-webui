@@ -114,3 +114,15 @@ variable "artifact_repository_url" {
   description = "URL of the Artifact Registry repository"
   type        = string
 }
+
+variable "enable_iap" {
+  description = "Enable Identity-Aware Proxy for the Cloud Run service"
+  type        = bool
+  default     = false
+}
+
+variable "iap_users" {
+  description = "List of users/groups/service accounts to grant IAP access"
+  type        = list(string)
+  default     = []
+}
