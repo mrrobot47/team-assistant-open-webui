@@ -160,8 +160,9 @@ module "cloud_build" {
   artifact_registry_url  = module.artifact_registry.repository_url
   service_account_email  = module.iam.cloud_build_service_account_email
   cloud_run_service_name = var.cloud_run_service_name
-  auto_deploy            = false # Disable auto-deployment for initial setup
+  auto_deploy            = true
   enable_release_trigger = false # Disable release trigger for staging
+  enable_manual_trigger  = false
 
   depends_on = [module.artifact_registry, module.iam]
 }
@@ -182,6 +183,10 @@ module "cloud_run" {
 
   # Storage configuration for Cloud Storage FUSE volumes
   storage_bucket_name = module.storage.bucket_name
+
+  # IAP Configuration
+  enable_iap = var.enable_iap
+  iap_users  = var.iap_users
 
   # Environment variables specific to Open WebUI
   environment_variables = {
