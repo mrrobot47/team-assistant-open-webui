@@ -242,13 +242,15 @@ resource "google_cloud_run_v2_service" "open_webui" {
   ]
 }
 
-# IAM policy for unauthenticated access
-resource "google_cloud_run_v2_service_iam_member" "public_access" {
+# IAM policy for invoker access
+resource "google_cloud_run_v2_service_iam_member" "invoker" {
+  for_each = toset(var.invoker_members)
+
   project  = var.project_id
   location = google_cloud_run_v2_service.open_webui.location
   name     = google_cloud_run_v2_service.open_webui.name
   role     = "roles/run.invoker"
-  member   = "allUsers"
+  member   = each.value
 }
 
 # Create custom domain mapping (optional)

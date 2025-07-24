@@ -42,7 +42,7 @@ output "cloud_run_ready" {
   value       = true
   depends_on = [
     google_cloud_run_v2_service.open_webui,
-    google_cloud_run_v2_service_iam_member.public_access
+    google_cloud_run_v2_service_iam_member.invoker
   ]
 }
 

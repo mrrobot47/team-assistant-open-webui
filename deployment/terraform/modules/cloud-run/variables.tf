@@ -267,3 +267,9 @@ variable "cloud_build_initial_ready" {
   type        = bool
   default     = false
 }
+
+variable "invoker_members" {
+  description = "A list of IAM members who should be granted invoker access to the Cloud Run service. For example: ['user:test@example.com', 'group:admins@example.com']"
+  type        = list(string)
+  default     = []
+}

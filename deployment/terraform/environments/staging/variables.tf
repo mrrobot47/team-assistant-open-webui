@@ -274,3 +274,9 @@ variable "environment" {
   type        = string
   default     = "staging"
 }
+
+variable "cloud_run_invoker_members" {
+  description = "A list of IAM members to grant invoker access to the Cloud Run service. Example: ['user:my-user@example.com']"
+  type        = list(string)
+  default     = []
+}

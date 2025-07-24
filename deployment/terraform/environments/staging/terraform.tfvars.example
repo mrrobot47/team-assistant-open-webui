@@ -56,6 +56,11 @@ agent_engine_custom_url = "https://your-custom-agent-engine-url.com"
 cloud_run_cpu = "2000m"                    # 2 CPUs (2000 millicores)
 cloud_run_memory = "4096Mi"                # 4GB RAM
 
+# Specify a list of IAM members to grant invoker access.
+# If left empty or omitted, the service will not be publicly accessible.
+# Example: cloud_run_invoker_members = ["user:my-user@example.com", "group:my-group@example.com"]
+cloud_run_invoker_members = []
+
 # =============================================================================
 # Database Configuration
 # =============================================================================
