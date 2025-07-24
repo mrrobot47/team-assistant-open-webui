@@ -14,7 +14,7 @@ locals {
     managed-by  = "terraform"
   }
 
-  # Cloud Build timeout of 20 minutes as specified
+  # Cloud Build timeout of 20 minutes
   build_timeout = "1200s"
 }
 
@@ -82,7 +82,7 @@ resource "google_cloudbuild_trigger" "staging_trigger" {
         "--image", "${var.artifact_registry_url}:${var.environment}-open-webui:$SHORT_SHA",
         "--region", var.region,
         "--platform", "managed",
-        "--service-account", "projects/-/serviceAccounts/${var.cloud_build_service_account_email}",
+        "--service-account", "${var.cloud_run_service_account_email}",
         "--vpc-connector", var.vpc_connector_name,
         "--memory", var.cloud_run_memory,
         "--cpu", var.cloud_run_cpu,
@@ -134,7 +134,7 @@ resource "google_cloudbuild_trigger" "production_trigger" {
 
   # Build configuration
   build {
-    timeout = local.build_timeout
+    timeout     = local.build_timeout
 
     # Use e2-standard-2 for faster builds
     options {
@@ -178,7 +178,7 @@ resource "google_cloudbuild_trigger" "production_trigger" {
         "--image", "${var.artifact_registry_url}/${var.environment}-open-webui:$TAG_NAME",
         "--region", var.region,
         "--platform", "managed",
-        "--service-account", "projects/-/serviceAccounts/${var.cloud_build_service_account_email}",
+        "--service-account", "${var.cloud_run_service_account_email}",
         "--vpc-connector", var.vpc_connector_name,
         "--memory", var.cloud_run_memory,
         "--cpu", var.cloud_run_cpu,
