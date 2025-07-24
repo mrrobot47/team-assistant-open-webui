@@ -14,8 +14,8 @@ locals {
     managed-by  = "terraform"
   }
 
-  # Cloud Build timeout of 10 minutes as specified
-  build_timeout = "600s"
+  # Cloud Build timeout of 20 minutes as specified
+  build_timeout = "1200s"
 }
 
 # Cloud Build trigger for staging (automatic)
@@ -38,7 +38,7 @@ resource "google_cloudbuild_trigger" "staging_trigger" {
 
   # Build configuration
   build {
-    timeout = local.build_timeout
+    timeout     = local.build_timeout
 
     # Use e2-standard-2 for faster builds
     options {

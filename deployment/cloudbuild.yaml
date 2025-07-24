@@ -20,8 +20,8 @@ substitutions:
   _CLOUD_RUN_TIMEOUT: '240'
   _VPC_CONNECTOR: '${_ENVIRONMENT}-open-webui-vpc-connector'
 
-# Build timeout: 10 minutes as specified
-timeout: 600s
+# Build timeout: 20 minutes as specified
+timeout: 1200s
 
 # Use e2-standard-2 for faster builds
 options:
