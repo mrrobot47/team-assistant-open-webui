@@ -79,7 +79,7 @@ resource "google_cloudbuild_trigger" "staging_trigger" {
       name = "gcr.io/cloud-builders/gcloud"
       args = [
         "run", "deploy", "${var.environment}-open-webui",
-        "--image", "${var.artifact_registry_url}:${var.environment}-open-webui:$SHORT_SHA",
+        "--image", "${var.artifact_registry_url}/${var.environment}-open-webui:$SHORT_SHA",
         "--region", var.region,
         "--platform", "managed",
         "--service-account", "${var.cloud_run_service_account_email}",
