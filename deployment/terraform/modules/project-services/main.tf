@@ -27,6 +27,7 @@ locals {
     "cloudtrace.googleapis.com",
     "container.googleapis.com",
     "servicenetworking.googleapis.com",
+    "containeranalysis.googleapis.com"
   ]
 }
 
