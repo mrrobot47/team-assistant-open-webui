@@ -44,6 +44,7 @@ resource "google_cloudbuild_trigger" "staging_trigger" {
     options {
       machine_type            = "E2_HIGHCPU_8"
       requested_verify_option = "VERIFIED"
+      logging                 = "CLOUD_LOGGING_ONLY"
     }
 
     # Build steps
@@ -139,6 +140,7 @@ resource "google_cloudbuild_trigger" "production_trigger" {
     options {
       machine_type            = "E2_HIGHCPU_8"
       requested_verify_option = "VERIFIED"
+      logging                 = "CLOUD_LOGGING_ONLY"
     }
 
     # Build steps for production
