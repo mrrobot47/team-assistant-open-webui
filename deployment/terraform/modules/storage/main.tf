@@ -2,7 +2,7 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = ">= 4.0.0"
+      version = "~> 5.45.0"
     }
   }
 }
@@ -24,7 +24,7 @@ resource "google_storage_bucket" "open_webui_data" {
 
   labels = local.common_labels
 
-  # Uniform bucket-level access
+  public_access_prevention    = "enforced"
   uniform_bucket_level_access = true
 
   # Versioning configuration
@@ -123,7 +123,7 @@ resource "google_storage_bucket" "temp_uploads" {
     purpose = "temp-uploads"
   })
 
-  # Uniform bucket-level access
+  public_access_prevention    = "enforced"
   uniform_bucket_level_access = true
 
   # Aggressive lifecycle for temp files
