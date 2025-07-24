@@ -81,15 +81,6 @@ module "storage" {
   depends_on = [module.project_services, module.iam]
 }
 
-# Apply bucket IAM after both IAM and storage modules are ready
-resource "google_storage_bucket_iam_member" "cloud_run_bucket_access" {
-  bucket = module.storage.data_bucket_name
-  role   = "roles/storage.objectAdmin"
-  member = "serviceAccount:${module.iam.cloud_run_service_account_email}"
-
-  depends_on = [module.iam, module.storage]
-}
-
 # Create secret manager resources
 module "secret_manager" {
   source = "../../modules/secret-manager"
@@ -226,6 +217,7 @@ module "cloud_run" {
   # Configuration
   oauth_client_id     = var.oauth_client_id
   storage_bucket_name = module.storage.data_bucket_name
+  invoker_members     = var.cloud_run_invoker_members
 
   # Dependencies
   services_ready            = module.project_services.services_ready
