@@ -150,7 +150,7 @@ output "iam_configuration" {
   value = {
     service_account = var.cloud_run_service_account_email
     public_access   = var.enable_public_access
-    invoker_members = var.enable_public_access ? ["allUsers"] : []
+    invoker_members = var.invoker_members
   }
 }
 
