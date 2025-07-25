@@ -24,6 +24,8 @@ resource "google_cloud_run_v2_service" "open_webui" {
     prevent_destroy = false
   }
 
+  ingress = var.ingress
+
   labels = local.common_labels
 
   template {

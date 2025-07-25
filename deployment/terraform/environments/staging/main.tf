@@ -218,7 +218,7 @@ module "cloud_run" {
   storage_bucket_name  = module.storage.data_bucket_name
   invoker_members      = var.cloud_run_invoker_members
   enable_public_access = false
-  ingress              = "INGRESS_TRAFFIC_INTERNAL_ONLY"
+  ingress              = "INGRESS_TRAFFIC_ALL"
 
   # Dependencies
   services_ready            = module.project_services.services_ready
