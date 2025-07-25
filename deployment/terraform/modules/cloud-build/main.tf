@@ -89,7 +89,8 @@ resource "google_cloudbuild_trigger" "staging_trigger" {
         "--cpu", var.cloud_run_cpu,
         "--min-instances", tostring(var.cloud_run_min_instances),
         "--max-instances", tostring(var.cloud_run_max_instances),
-        "--timeout", tostring(var.cloud_run_timeout)
+        "--timeout", tostring(var.cloud_run_timeout),
+        "--ingress=internal"
       ]
     }
 
@@ -185,7 +186,8 @@ resource "google_cloudbuild_trigger" "production_trigger" {
         "--cpu", var.cloud_run_cpu,
         "--min-instances", tostring(var.cloud_run_min_instances),
         "--max-instances", tostring(var.cloud_run_max_instances),
-        "--timeout", tostring(var.cloud_run_timeout)
+        "--timeout", tostring(var.cloud_run_timeout),
+        "--ingress=internal"
       ]
     }
 
