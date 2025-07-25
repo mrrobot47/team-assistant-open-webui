@@ -278,3 +278,9 @@ variable "invoker_members" {
   type        = list(string)
   default     = []
 }
+
+variable "iap_enabled" {
+  description = "Enable IAP for the Cloud Run service."
+  type        = bool
+  default     = false
+}

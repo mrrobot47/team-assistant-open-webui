@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/google"
       version = ">= 4.0.0"
     }
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = "~> 6.31.0"
+    }
   }
 }
 
@@ -17,6 +21,7 @@ locals {
 
 # Cloud Run V2 Service
 resource "google_cloud_run_v2_service" "open_webui" {
+  provider = google-beta
   name     = "${var.environment}-open-webui"
   location = var.region
   project  = var.project_id
@@ -25,6 +30,8 @@ resource "google_cloud_run_v2_service" "open_webui" {
   }
 
   ingress = var.ingress
+  iap_enabled = var.iap_enabled
+  launch_stage = "BETA"
 
   labels = local.common_labels
 
@@ -251,16 +258,6 @@ resource "google_cloud_run_v2_service" "open_webui" {
   ]
 }
 
-# IAM policy for invoker access
-resource "google_cloud_run_v2_service_iam_member" "invoker" {
-  for_each = toset(var.invoker_members)
-
-  project  = var.project_id
-  location = google_cloud_run_v2_service.open_webui.location
-  name     = google_cloud_run_v2_service.open_webui.name
-  role     = "roles/run.invoker"
-  member   = each.value
-}
 
 # Create custom domain mapping (optional)
 resource "google_cloud_run_domain_mapping" "custom_domain" {

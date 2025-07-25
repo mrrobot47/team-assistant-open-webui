@@ -4,7 +4,7 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "~> 5.45.0"
+      version = "~> 6.31.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -51,6 +51,18 @@ module "iam" {
   services_ready = module.project_services.services_ready
 
   depends_on = [module.project_services]
+}
+
+# Create IAP IAM resources
+module "iap-iam" {
+  source = "../../modules/iap-iam"
+
+  project_id                   = var.project_id
+  cloud_run_service_name       = module.cloud_run.service_name
+  cloud_run_service_location   = module.cloud_run.service_location
+  cloud_run_invoker_members     = var.cloud_run_invoker_members
+
+  depends_on = [module.cloud_run]
 }
 
 # Create networking resources
@@ -219,6 +231,7 @@ module "cloud_run" {
   invoker_members      = var.cloud_run_invoker_members
   enable_public_access = false
   ingress              = "INGRESS_TRAFFIC_ALL"
+  iap_enabled          = true
 
   # Dependencies
   services_ready            = module.project_services.services_ready
