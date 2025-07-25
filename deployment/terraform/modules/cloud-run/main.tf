@@ -35,10 +35,17 @@ resource "google_cloud_run_v2_service" "open_webui" {
       max_instance_count = var.max_instances
     }
 
-    # VPC Connector (mandatory)
+    # Direct VPC Egress for private service access
     vpc_access {
-      connector = "projects/${var.project_id}/locations/${var.region}/connectors/${var.vpc_connector_name}"
-      egress    = "ALL_TRAFFIC"
+      network_interfaces {
+        network    = "projects/${var.project_id}/global/networks/${var.network_name}"
+        subnetwork = "projects/${var.project_id}/regions/${var.region}/subnetworks/${var.subnet_name}"
+        tags = [
+          "cloud-run-service",
+          "private-service"
+        ]
+      }
+      egress = "ALL_TRAFFIC"
     }
 
     # Service account

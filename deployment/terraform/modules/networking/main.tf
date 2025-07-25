@@ -48,18 +48,6 @@ resource "google_compute_subnetwork" "main" {
   }
 }
 
-# VPC Connector subnet (required for Cloud Run private access)
-resource "google_compute_subnetwork" "vpc_connector" {
-  name          = "${var.environment}-open-webui-subnet-vpc-connector"
-  ip_cidr_range = "10.8.0.0/28"
-  network       = google_compute_network.vpc.id
-  region        = var.region
-  description   = "VPC Connector subnet for Open WebUI ${var.environment} environment"
-
-  # VPC Connector specific settings
-  private_ip_google_access = true
-}
-
 # Private service connection for Cloud SQL and Redis
 resource "google_compute_global_address" "private_service_range" {
   name          = "${var.environment}-open-webui-private-service-range"
@@ -80,24 +68,6 @@ resource "google_service_networking_connection" "private_service_connection" {
   lifecycle {
     prevent_destroy = false
   }
-}
-
-# VPC Connector for Cloud Run (mandatory for private service access)
-resource "google_vpc_access_connector" "connector" {
-  name          = "${var.environment}-vpc-connector"
-  region        = var.region
-
-  subnet {
-    name = google_compute_subnetwork.vpc_connector.name
-  }
-
-  min_throughput = 200
-  max_throughput = var.environment == "prod" ? 1000 : 300
-
-  depends_on = [
-    google_compute_subnetwork.vpc_connector,
-    var.services_ready
-  ]
 }
 
 # Firewall rule to allow internal communication
@@ -123,28 +93,8 @@ resource "google_compute_firewall" "allow_internal" {
 
   source_ranges = [
     "10.0.0.0/24", # Main subnet
-    "10.8.0.0/28", # VPC Connector subnet
     "10.1.0.0/16", # Private service range
   ]
-
-  direction = "INGRESS"
-  priority  = 1000
-}
-
-# Firewall rule to allow VPC Connector access
-resource "google_compute_firewall" "allow_vpc_connector" {
-  name    = "${var.environment}-open-webui-allow-vpc-connector"
-  network = google_compute_network.vpc.name
-
-  description = "Allow VPC Connector access to private services"
-
-  allow {
-    protocol = "tcp"
-    ports    = ["5432", "6379", "8080", "443", "80"]
-  }
-
-  source_ranges = ["10.8.0.0/28"] # VPC Connector subnet
-  target_tags   = ["private-service"]
 
   direction = "INGRESS"
   priority  = 1000
@@ -255,32 +205,3 @@ resource "null_resource" "service_networking_cleanup" {
   depends_on = [google_compute_network.vpc]
 }
 
-# Cleanup resource for auto-created VPC Connector resources
-resource "null_resource" "vpc_connector_cleanup" {
-  triggers = {
-    vpc_connector_name = google_vpc_access_connector.connector.name
-    region            = var.region
-    project_id        = var.project_id
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      # Clean up auto-created firewall rules
-      gcloud compute firewall-rules list \
-        --filter="name~'.*${self.triggers.vpc_connector_name}.*'" \
-        --format="value(name)" \
-        --project=${self.triggers.project_id} | \
-      while read rule; do
-        if [ ! -z "$rule" ]; then
-          echo "Deleting auto-created firewall rule: $rule"
-          gcloud compute firewall-rules delete "$rule" \
-            --project=${self.triggers.project_id} \
-            --quiet || true
-        fi
-      done
-    EOT
-  }
-
-  depends_on = [google_vpc_access_connector.connector]
-}

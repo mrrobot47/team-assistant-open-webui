@@ -78,7 +78,8 @@ output "service_configuration" {
     memory_limit    = var.memory_limit
     min_instances   = var.min_instances
     max_instances   = var.max_instances
-    vpc_connector   = var.vpc_connector_name
+    network_name    = var.network_name
+    subnet_name     = var.subnet_name
     port            = var.port
     timeout         = var.request_timeout_seconds
     environment     = var.environment
@@ -137,7 +138,8 @@ output "scaling_configuration" {
 output "networking_configuration" {
   description = "Networking configuration"
   value = {
-    vpc_connector = var.vpc_connector_name
+    network_name  = var.network_name
+    subnet_name   = var.subnet_name
     egress        = "ALL_TRAFFIC"
     ingress       = var.ingress
   }

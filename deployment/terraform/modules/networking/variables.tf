@@ -34,25 +34,3 @@ variable "services_ready" {
   type        = bool
   default     = true
 }
-
-variable "vpc_connector_min_throughput" {
-  description = "Minimum throughput for VPC Connector"
-  type        = number
-  default     = 200
-
-  validation {
-    condition     = var.vpc_connector_min_throughput >= 200 && var.vpc_connector_min_throughput <= 1000
-    error_message = "VPC Connector minimum throughput must be between 200 and 1000."
-  }
-}
-
-variable "vpc_connector_max_throughput" {
-  description = "Maximum throughput for VPC Connector (environment-specific)"
-  type        = number
-  default     = 300
-
-  validation {
-    condition     = var.vpc_connector_max_throughput >= 200 && var.vpc_connector_max_throughput <= 1000
-    error_message = "VPC Connector maximum throughput must be between 200 and 1000."
-  }
-} 

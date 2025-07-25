@@ -29,7 +29,6 @@ locals {
     max_instances                = 1
     database_tier                = "db-f1-micro"
     redis_memory_size_gb         = 1
-    vpc_connector_max_throughput = 300
   }
 }
 
@@ -58,11 +57,10 @@ module "iam" {
 module "networking" {
   source = "../../modules/networking"
 
-  project_id                   = var.project_id
-  environment                  = local.environment
-  region                       = var.region
-  services_ready               = module.project_services.services_ready
-  vpc_connector_max_throughput = local.staging_config.vpc_connector_max_throughput
+  project_id     = var.project_id
+  environment    = local.environment
+  region         = var.region
+  services_ready = module.project_services.services_ready
 
   depends_on = [module.project_services]
 }
@@ -199,7 +197,8 @@ module "cloud_run" {
   region                          = var.region
   container_image_url             = "${module.artifact_registry.repository_url}/open-webui:latest"
   cloud_run_service_account_email = module.iam.cloud_run_service_account_email
-  vpc_connector_name              = module.networking.vpc_connector_name
+  network_name                    = module.networking.network_name
+  subnet_name                     = module.networking.main_subnet_name
 
   # Resource limits
   cpu_limit     = var.cloud_run_cpu
@@ -253,7 +252,8 @@ module "cloud_build" {
   artifact_registry_url             = module.artifact_registry.repository_url
   cloud_build_service_account_email = module.iam.cloud_build_service_account_email
   cloud_run_service_account_email   = module.iam.cloud_run_service_account_email
-  vpc_connector_name                = module.networking.vpc_connector_name
+  network_name                      = module.networking.network_name
+  subnet_name                       = module.networking.main_subnet_name
 
   depends_on = [module.artifact_registry, module.iam]
 }

@@ -44,8 +44,13 @@ variable "cloud_run_service_account_email" {
   type        = string
 }
 
-variable "vpc_connector_name" {
-  description = "VPC connector name for Cloud Run"
+variable "network_name" {
+  description = "Name of the VPC network for Direct VPC Egress"
+  type        = string
+}
+
+variable "subnet_name" {
+  description = "Name of the subnet for Direct VPC Egress"
   type        = string
 }
 
