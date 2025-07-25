@@ -224,7 +224,7 @@ variable "enable_public_access" {
 variable "ingress" {
   description = "Ingress settings for Cloud Run service"
   type        = string
-  default     = "INGRESS_TRAFFIC_ALL"
+  default     = "INGRESS_TRAFFIC_INTERNAL_ONLY"
 
   validation {
     condition = contains([
