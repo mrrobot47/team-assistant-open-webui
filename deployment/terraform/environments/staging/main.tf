@@ -214,9 +214,11 @@ module "cloud_run" {
   #agent_engine_secret_id        = module.secret_manager.external_agent_engine_id_secret_id
 
   # Configuration
-  oauth_client_id     = var.oauth_client_id
-  storage_bucket_name = module.storage.data_bucket_name
-  invoker_members     = var.cloud_run_invoker_members
+  oauth_client_id      = var.oauth_client_id
+  storage_bucket_name  = module.storage.data_bucket_name
+  invoker_members      = var.cloud_run_invoker_members
+  enable_public_access = false
+  ingress              = "INGRESS_TRAFFIC_INTERNAL_ONLY"
 
   # Dependencies
   services_ready            = module.project_services.services_ready
