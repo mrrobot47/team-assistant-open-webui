@@ -218,7 +218,7 @@ variable "request_timeout_seconds" {
 variable "enable_public_access" {
   description = "Enable public access to the Cloud Run service"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "ingress" {
