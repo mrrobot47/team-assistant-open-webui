@@ -19,7 +19,6 @@ locals {
 resource "google_compute_network" "vpc" {
   name                    = "${var.environment}-open-webui-vpc"
   auto_create_subnetworks = false
-  routing_mode            = "REGIONAL"
   description             = "VPC network for Open WebUI ${var.environment} environment"
 
   # Ensure proper destruction order - peering must be destroyed first
@@ -37,15 +36,6 @@ resource "google_compute_subnetwork" "main" {
   network       = google_compute_network.vpc.id
   region        = var.region
   description   = "Main subnet for Open WebUI ${var.environment} environment"
-
-  # Enable private Google access for accessing Google APIs
-  private_ip_google_access = true
-
-  log_config {
-    aggregation_interval = "INTERVAL_10_MIN"
-    flow_sampling        = 0.5
-    metadata             = "INCLUDE_ALL_METADATA"
-  }
 }
 
 # Private service connection for Cloud SQL and Redis
@@ -130,10 +120,6 @@ resource "google_compute_router" "router" {
   name    = "${var.environment}-open-webui-router"
   region  = var.region
   network = google_compute_network.vpc.id
-
-  bgp {
-    asn = 64514
-  }
 }
 
 resource "google_compute_router_nat" "nat" {
