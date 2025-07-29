@@ -155,12 +155,3 @@ output "deployment_commands" {
   }
 }
 
-output "cloud_run_ready" {
-  description = "Indicates that Cloud Run service is ready"
-  value       = true
-  depends_on = [
-    google_cloud_run_v2_service.open_webui,
-    google_cloud_run_v2_service_iam_member.invoker
-  ]
-} 
-
